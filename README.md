@@ -1,60 +1,63 @@
-# Lab 1: Grade Evaluator & Archiver
-
-**Muraho!** (Hello!) This project evaluates a student's grades from a CSV file
-and archives the grade file with a timestamp using a Bash script.
-
-Sample student used for testing: **Aline Uwimana**.
+# Lab 2: The Social Media Data Detective
 
 ## Files
+- `data-detective.py` — interactive menu that cleans, analyzes, sorts, and searches the tweet dataset.
+- `feed-analyzer.sh` — Bash pipeline that prints the Top 5 Most Active Users.
+- `twitter_dataset.csv` — the dataset used for testing.
 
-- `grade-evaluator.py` — reads `grades.csv`, validates it, calculates the
-  final grade / GPA, and decides Pass/Fail with resubmission recommendations.
-- `organizer.sh` — archives `grades.csv` into `archive/` with a timestamp,
-  resets a fresh empty `grades.csv`, and logs the action to `organizer.log`.
-- `grades.csv` — sample grade data.
+## Requirements
+- Python 3
+- Bash (Linux/macOS/WSL)
+- A terminal that supports ANSI colors (most do) — needed to see the blue keyword highlighting in Quest 4.
 
-## How to run the Python evaluator
-
+## Running the Python script
 ```bash
-python3 grade-evaluator.py
+python3 data-detective.py
 ```
+It will:
+1. Load `twitter_dataset.csv` (must be in the same folder).
+2. Clean the data automatically — report rows removed (missing Text) and rows fixed (missing Likes/Retweets).
+3. Show a menu so you can run each quest on its own:
+   ```
+   ===== The Social Media Data Detective =====
+   1. Quest 1 - Data Audit (clean the data)
+   2. Quest 2 - Find the most viral tweet
+   3. Quest 3 - Sort tweets by Likes (Top 10)
+   4. Quest 4 - Search tweets by keyword
+   5. Exit
+   ```
 
-You'll be prompted for a filename — type `grades.csv` and press Enter.
+### Quest 1 — Data Audit
+Shows how many tweets remain after cleaning (rows with missing Text removed, missing Likes/Retweets zero-filled).
 
-The script will:
-1. Check every score is between 0 and 100.
-2. Check weights: total = 100, Formative = 60, Summative = 40.
-3. Calculate the Final Grade and GPA (`GPA = (Total Grade / 100) * 5.0`).
-4. Print PASSED / FAILED (requires ≥ 50% in **both** Formative and Summative).
-5. List any failed Formative assignment(s) with the highest weight as
-   eligible for resubmission (ties are all listed).
+### Quest 2 — The Viral Post
+Prints the single tweet with the highest Likes (found with a manual loop, no `max()`).
 
-It also handles a missing file, an empty CSV, malformed rows, bad weight
-totals, and out-of-range scores gracefully — with clear messages instead
-of crashing. *Nta na kimwe kigomba guhagarara mu buryo budasobanutse!*
-(Nothing should crash unexpectedly!)
+### Quest 3 — The Algorithm Builder
+Sorts all tweets by Likes, descending, using a hand-written **Selection Sort** (no `.sort()`/`sorted()`). Since this is O(n²) over 10,000 tweets, it runs on a background thread while the main thread prints a friendly status message roughly every 3 seconds, including live progress:
+```
+[Quest 3] Sorting 10,000 tweets by Likes (Selection Sort)...
+  Still sorting through the tweets, thanks for hanging in there. (47.2% complete, 3s elapsed)
+Sorting finished in 4.40 seconds!
+```
+Once done, it prints the Top 10 most-liked tweets.
 
-## How to run the organizer script
+### Quest 4 — The Content Filter
+Prompts for a keyword, then:
+1. Prints the match count first, with the keyword itself shown in blue.
+2. Lists every matching tweet, with each occurrence of the keyword highlighted in blue inside the tweet text.
 
+Example:
+```
+Found 342 tweet(s) matching 'party':
+
+- julie81 (25 likes): Party least receive say or single. ...
+```
+(In a real terminal, "party"/"Party" appears in blue both in the count line and inside the tweet text.)
+
+## Running the Bash script
 ```bash
-chmod +x organizer.sh   # only needed once
-./organizer.sh
+chmod +x feed-analyzer.sh
+./feed-analyzer.sh twitter_dataset.csv
 ```
-
-Each run will:
-1. Create an `archive/` folder if it doesn't exist.
-2. Move the current `grades.csv` into `archive/` renamed with a timestamp
-   (e.g. `grades_20260721-154041.csv`). If two runs happen in the same
-   second, a counter suffix (`_1`, `_2`, ...) is added so no file is ever
-   overwritten.
-3. Create a brand-new, empty `grades.csv` ready for the next batch.
-4. Append a line to `organizer.log` recording the timestamp, original
-   filename, and the archived filename — this log accumulates across runs.
-
-## Notes
-
-- GPA formula: `GPA = (Total Grade / 100) * 5.0`.
-- Category averages (Formative / Summative) are each weighted internally
-  by that category's own assignment weights, then compared against the
-  50% pass threshold separately — **murakoze!** (thank you) for checking
-  both categories, not just the overall total.
+Prints the Top 5 Most Active Users (by tweet count)..
