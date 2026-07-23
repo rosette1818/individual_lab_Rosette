@@ -1,18 +1,5 @@
 #!/usr/bin/python3
-"""
-data-detective.py
 
-Lab 2: The Social Media Data Detective.
-
-Reads a messy Twitter-style CSV dataset and offers a menu so you can
-run each quest on its own:
-1. Clean the data (handle missing Text/Likes/Retweets).
-2. Find the tweet with the most Likes (no max()).
-3. Sort all tweets by Likes, descending (no .sort()/sorted()).
-4. Search tweets for a keyword and extract matches.
-
-No .sort(), sorted(), or max() are used anywhere in this file.
-"""
 import csv
 import sys
 import os
@@ -21,9 +8,7 @@ import threading
 
 
 def load_raw_data(filename):
-    """
-    Loads the CSV file into a list of dictionaries exactly as it is (messy).
-    """
+
     if not os.path.exists(filename):
         print(f"Error: The file '{filename}' was not found.")
         sys.exit(1)
@@ -38,11 +23,7 @@ def load_raw_data(filename):
 
 
 def clean_data(tweets):
-    """
-    QUEST 1: Handle missing fields.
-    Check for missing text, and replace empty likes/retweets with 0.
-    Return a clean list of tweets.
-    """
+ 
     clean_tweets = []
     fixed_count = 0
     removed_count = 0
@@ -86,10 +67,7 @@ def clean_data(tweets):
 
 
 def find_viral_tweet(tweets):
-    """
-    QUEST 2: Loop through the list to find the tweet with the highest
-    'Likes'. Do not use the max() function.
-    """
+    
     if not tweets:
         print("No tweets available to search.")
         return None
@@ -109,18 +87,12 @@ def find_viral_tweet(tweets):
 
 
 def custom_sort_by_likes(tweets):
-    """
-    QUEST 3: Selection Sort by 'Likes', descending. NO .sort()/sorted()
-    allowed! The sort runs on a background thread so the main thread
-    can print a friendly status message every ~3 seconds while it works.
-    """
+    
     sorted_tweets = tweets.copy()
     n = len(sorted_tweets)
 
-    # Shared progress counter the sort thread updates and the main
-    # thread reads every few seconds. A single-item list is enough
-    # here since only one thread ever writes to it.
-    progress = [0]
+
+     progress = [0]
 
     def do_sort():
         for i in range(n):
@@ -173,21 +145,14 @@ RESET = "\033[0m"
 
 
 def highlight_keyword(text, keyword):
-    """
-    Wraps every case-insensitive occurrence of `keyword` inside `text`
-    with ANSI codes so it prints in blue, while keeping the tweet's
-    original capitalization.
-    """
+  
     import re
     pattern = re.compile(re.escape(keyword), re.IGNORECASE)
     return pattern.sub(lambda m: f"{BLUE}{m.group(0)}{RESET}", text)
 
 
 def search_tweets(tweets, keyword):
-    """
-    QUEST 4: Search for a keyword and extract matching tweets into a
-    new list.
-    """
+    
     matches = []
     keyword_lower = keyword.lower()
 
@@ -195,7 +160,7 @@ def search_tweets(tweets, keyword):
         if keyword_lower in tweet['Text'].lower():
             matches.append(tweet)
 
-    # Show the count first, with the search word itself in blue.
+   
     print(f"\nFound {len(matches)} tweet(s) matching "
           f"'{BLUE}{keyword}{RESET}':\n")
 
@@ -221,9 +186,7 @@ if __name__ == "__main__":
     dataset = load_raw_data("twitter_dataset.csv")
     print(f"Loaded {len(dataset)} raw tweets.")
 
-    # Data must be cleaned before Quests 2-4 can trust the Likes/Retweets
-    # values, so we clean it once up front, then let the menu control
-    # which quest to *display*.
+   
     clean_dataset = clean_data(dataset)
 
     while True:
